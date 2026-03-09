@@ -1,4 +1,4 @@
-class PriorityQueue:
+"""class PriorityQueue:
 	def __init__(self, data):
 		pass
 
@@ -9,68 +9,71 @@ class PriorityQueue:
 		pass
 
 	def peek(self):
-		pass
+		pass"""
 
 #region Variation 1
 """
 Variation 1: 
-Binary Sort Queue Using the string value stored within a queued value
+Bubble sort queue using the priority value stored within a queued value
 """
-class Queue:
-    # Initialises self
-    def __init__(self):
+class PriorityQueue:
+    def __init__(self, data):
         self.queue = []
 
-    # Adds value to the end of the queue
-    def enqueue(self, data):
+        # Loops through each object in data, adding it to the self.queue as a list
+        for i in range(len(data)):
+            self.queue.append(list(data[i]))
+
+        # Performs a bubble sort on the self.queue
+        self.bubbleSort()
+        
+        print(self.queue)
+
+
+    def get(self):
+        popped = self.queue[0][0]
+        self.queue.pop(0)
+        return popped
+
+    def add(self, data):
         self.queue.append(data)
+        # Performs a bubble sort on the self.queue
+        self.bubbleSort()
 
-    # Removes and returns the first (front) element from the queue
-    def dequeue(self):
-        if self.isEmpty:
-            return "Queue is empty."
-        else:
-            return self.queue.pop(0)
+    def bubbleSort(self):
+        """
+        Base for the bubble sort from:
+        https://www.w3schools.com/python/python_dsa_bubblesort.asp#:~:text=Example,-Improved
+        """
+        # Loops through the queue one object at a time
+        for i in range(len(self.queue) - 1):
+            # swapped is used to check whether or not self.queue is already sorted
+            swapped = False
+            # Internal loop to compare every object in the queue to self.queue[i]
+            for j in range(len(self.queue) - i - 1):
+                # When the current queue obejct has a greater priority value than the next, swap them
+                if self.queue[j][1] > self.queue[j+1][1]:
+                    self.queue[j], self.queue[j+1] = self.queue[j+1], self.queue[j]
+                    swapped = True
+            # Ends loop if it is already sorted
+            if not swapped:
+                break
     
-    # Prints out the first (front) element in the stack
-    def peek(self):
-        if self.isEmpty():
-            return "Queue is empty."
-        else:
-            return self.queue[0]
-
-    # Bool check if the queue is empty or not    
-    def isEmpty(self):
-        return len(self.queue) == 0
     
-    # returns the size of the queue
-    def size(self):
-        return len(self.queue)
-queue_data = [
+"""queue_data = [
 	("Robert", 1),
 	("Jane", 4),
 	("Alex", 2),
-	("Robert", 1)
+	("Robert", 1),
+    ("Kyle", 1)
 ]
-queue = Queue(queue_data)
-sorted = []
+queue = PriorityQueue(queue_data)
 
-for i in range(len(queue)):
-	if i == 0:
-		sorted.append(queue[0])
-	else:
-		for j in range(len(sorted)):
-			if queue[i][1] < sorted[i][1]:
-				sorted.insert(i+1, sorted[i])
-			elif queue[i][1] > sorted[i][1]:
-				sorted.insert(i-1, queue[i])
+print("Queue size: ", queue.size())
 
 print(queue.get())
 queue.add(("", 2))
-print(queue.get())
-
-
-
+print(queue.get())"""
 
 #endregion
 

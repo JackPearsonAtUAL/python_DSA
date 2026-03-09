@@ -30,3 +30,4 @@ print("Getting the tenth item in the queue ... " + str(queue.get() == "Metropoli
 print("Getting the eleventh item in the queue ... " + str(queue.get() == "Lioness"))
 print("Getting the twelfth item in the queue ... " + str(queue.get() == "Victoria"))
 print("Getting the thirteenth item in the queue ... " + str(queue.get() == "Waterloo & City"))
+
