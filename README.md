@@ -38,7 +38,7 @@ Unless stated within the code or the week overview's disclaimer, AI has not been
 ### Week 3: Set Theory
 **Files**
 
-    task-1
+    assignment-task-1
 
 **Task 1:** Learning Outcomes: In this lecture, we will introduce set theory and look at how we can operate on sets using simple operations. We will also look at how we can use sets in Python. After the introduction of sets, we will start exploring the larger topic of graph theory and look at how set theory can be applied to describe graph theory.
 
