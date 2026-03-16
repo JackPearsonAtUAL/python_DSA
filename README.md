@@ -2,7 +2,19 @@
 ## Disclaimer
 Unless stated within the code or the week overview's disclaimer, AI has not been used for parts of this project
 
-### Week 1: Stacks and Queues
+## Assignments
+### Assignment Task 1: Linear data structure
+**Task:** The first of three tasks to be submitted for the final assessment will be introduced in this session. We will use the first hour to provide explanation and requirements of the task and for you to work on a preliminary version of it.
+
+Implement a Priority Queue according to the stated requirements using the starter project provided.
+
+**Objectives:** Implement the specified programme in code
+
+For more information look at the ReadMe inside:
+
+    assignment-task-1
+
+## Week 1: Stacks and Queues
 **Files**
 
     stacks_and_queues.py
@@ -11,7 +23,7 @@ Unless stated within the code or the week overview's disclaimer, AI has not been
 
 **Objectives:** Implementing Stacks and Queues in code
 
-### Week 2: Linked Lists
+## Week 2: Linked Lists
 **Files**
 
     linked_lists.py
@@ -35,23 +47,25 @@ Unless stated within the code or the week overview's disclaimer, AI has not been
 - Implement a fixed sized queue and stack
 
 
-### Week 3: Set Theory
+## Week 4: Set Theory
+**Lecture never reached the tasks section**
+
 **Files**
 
-    assignment-task-1
+    n/a
 
 **Task 1:** Learning Outcomes: In this lecture, we will introduce set theory and look at how we can operate on sets using simple operations. We will also look at how we can use sets in Python. After the introduction of sets, we will start exploring the larger topic of graph theory and look at how set theory can be applied to describe graph theory.
 
 **Objectives:** Set theory and Graph theory 
 
-**Task:** Using what we understand of graph and extending it with additional concepts, we will look at how we can implement a practical graph data structure in code that we can continue improve on for future use.
+**Task 2:** Using what we understand of graph and extending it with additional concepts, we will look at how we can implement a practical graph data structure in code that we can continue improve on for future use.
 
 **Objectives:** Implementing a graph data structure in code
 
-## Assignment Task 1: Linear data structure
-**Task:** The first of three tasks to be submitted for the final assessment will be introduced in this session. We will use the first hour to provide explanation and requirements of the task and for you to work on a preliminary version of it.
+## Week 5: Graph Theory
+Learning Outcomes: Simple Graph and Multigraph
 
-Implement a Priority Queue according to the stated requirements using the starter project provided.
-
-**Objectives:** Implement the specified programme in code
-
+- Simple Graph
+- Multigraph
+- Directed graphs
+- Graph representation
