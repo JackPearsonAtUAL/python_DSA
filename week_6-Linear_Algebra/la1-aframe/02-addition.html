@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>02 · Vector Addition — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:1rem 1.4rem; max-width:560px; }
+  .panel h2 { font-size:0.9rem; color:#7fff6e; margin-bottom:0.3rem; }
+  .panel p  { font-size:0.75rem; color:#888; line-height:1.5; }
+  .panel .formula { color:#5ec4ff; margin-top:0.3rem; font-size:0.8rem; }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>02 · Vector Addition — tip-to-tail</h2>
+    <p>Place <strong style="color:#5ec4ff">u</strong> at the origin. Place <strong style="color:#ff9966">v</strong>
+       at the tip of u. The <strong style="color:#cc88ff">resultant</strong> is the shortcut from start to finish.</p>
+    <div class="formula">u=[2,1,1] + v=[1,2,1] = [3,3,2]</div>
+  </div>
+</div>
+<a id="back" href="index.html">← index</a>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const scene = document.querySelector('a-scene');
+  buildScene(scene, { camPos:'6 5 9' });
+
+  const u = [2,1,1];
+  const v = [1,2,1];
+  const r = LA.add(u,v);
+
+  // u from origin
+  scene.appendChild(makeArrow([0,0,0], u, '#5ec4ff', 1, 0.05, 0.1, 0.22));
+  scene.appendChild(makeLabel('u=[2,1,1]', [u[0]*0.5+0.1, u[1]*0.5+0.2, u[2]*0.5], '#5ec4ff'));
+
+  // v from tip of u
+  scene.appendChild(makeArrow(u, r, '#ff9966', 1, 0.05, 0.1, 0.22));
+  scene.appendChild(makeLabel('v=[1,2,1]', [u[0]+v[0]*0.5+0.2, u[1]+v[1]*0.5, u[2]+v[2]*0.5], '#ff9966'));
+
+  // Ghost v from origin (dashed)
+  scene.appendChild(makeDashedLine([0,0,0], v, '#ff9966', 24, 0.02));
+
+  // Resultant
+  scene.appendChild(makeArrow([0,0,0], r, '#cc88ff', 1, 0.06, 0.12, 0.26));
+  scene.appendChild(makeLabel(`u+v=[${r}]`, [r[0]*0.45-0.3, r[1]*0.45+0.3, r[2]*0.45], '#cc88ff'));
+
+  // Dots at key points
+  [[0,0,0], u, r].forEach((p,i)=>{
+    const s = document.createElement('a-sphere');
+    s.setAttribute('radius', 0.08);
+    s.setAttribute('color', ['#ffffff','#5ec4ff','#cc88ff'][i]);
+    s.setAttribute('position', p.join(' '));
+    scene.appendChild(s);
+  });
+});
+</script>
+</body>
+</html>

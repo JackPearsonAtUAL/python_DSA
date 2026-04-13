@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>09 · Linear Transformations — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:0.8rem 1.4rem; max-width:680px; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+  .panel h2 { font-size:0.85rem; color:#7fff6e; white-space:nowrap; }
+  .btns { display:flex; gap:0.5rem; pointer-events:all; }
+  .btn { font-family:'Space Mono',monospace; font-size:0.7rem; padding:0.3rem 0.8rem;
+         border:1px solid #333; background:#111; color:#aaa; cursor:pointer; border-radius:2px; }
+  .btn.active { border-color:#7fff6e; color:#7fff6e; }
+  #desc { font-size:0.72rem; color:#666; padding:0.2rem 1.4rem 0.6rem; background:rgba(10,10,15,0.88); }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>09 · Linear Transformations</h2>
+    <div class="btns">
+      <button class="btn active" onclick="setMode('identity')">Identity</button>
+      <button class="btn" onclick="setMode('scale')">Scale</button>
+      <button class="btn" onclick="setMode('rotate')">Rotate Y</button>
+      <button class="btn" onclick="setMode('shear')">Shear</button>
+    </div>
+  </div>
+  <div id="desc">Identity: no change — every point maps to itself.</div>
+</div>
+<a id="back" href="index.html">← index</a>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+// 3x3 matrix-vector multiply
+function mv3(M, v) {
+  return [
+    M[0][0]*v[0]+M[0][1]*v[1]+M[0][2]*v[2],
+    M[1][0]*v[0]+M[1][1]*v[1]+M[1][2]*v[2],
+    M[2][0]*v[0]+M[2][1]*v[1]+M[2][2]*v[2],
+  ];
+}
+
+const transforms = {
+  identity: {
+    M: [[1,0,0],[0,1,0],[0,0,1]],
+    desc: 'Identity: no change — every point maps to itself.',
+  },
+  scale: {
+    M: [[2,0,0],[0,0.5,0],[0,0,1.5]],
+    desc: 'Scale: x×2, y×0.5, z×1.5 — squash and stretch independently on each axis.',
+  },
+  rotate: {
+    M: () => { const a=Math.PI/4, c=Math.cos(a), s=Math.sin(a);
+               return [[c,0,s],[0,1,0],[-s,0,c]]; },
+    desc: 'Rotate 45° around Y-axis — preserves shape and distances.',
+  },
+  shear: {
+    M: [[1,0.5,0],[0,1,0],[0,0,1]],
+    desc: 'Shear: x is offset by 0.5×y — slants the grid without changing volume.',
+  },
+};
+
+// Build a 3D lattice of points
+const original = [];
+for (let x=-2; x<=2; x++) for (let y=-2; y<=2; y++) for (let z=-2; z<=2; z++) {
+  original.push([x,y,z]);
+}
+
+let dotEntities = [];
+let scene;
+
+function getM(key) {
+  const t = transforms[key];
+  return typeof t.M === 'function' ? t.M() : t.M;
+}
+
+function setMode(key) {
+  document.querySelectorAll('.btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().startsWith(key[0])));
+  document.getElementById('desc').textContent = transforms[key].desc;
+
+  const M = getM(key);
+  dotEntities.forEach((el, i) => {
+    const t = mv3(M, original[i]);
+    el.setAttribute('position', t.join(' '));
+  });
+
+  // Update basis vectors
+  updateBasis(M);
+}
+
+let basisArrows = [];
+function updateBasis(M) {
+  basisArrows.forEach(el => el.parentNode && el.parentNode.removeChild(el));
+  basisArrows = [];
+  const basis = [[1,0,0],[0,1,0],[0,0,1]];
+  const colors = ['#ff5555','#55ff55','#5599ff'];
+  basis.forEach((b, i) => {
+    const tb = mv3(M, b);
+    const arrow = makeArrow([0,0,0], tb.map(v=>v*2), colors[i], 1, 0.06, 0.12, 0.25);
+    scene.appendChild(arrow);
+    basisArrows.push(arrow);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  scene = document.querySelector('a-scene');
+  buildScene(scene, { camPos:'7 5 10' });
+
+  // Create dots for each lattice point
+  original.forEach(p => {
+    const s = document.createElement('a-sphere');
+    s.setAttribute('radius', '0.06');
+    s.setAttribute('color', '#5ec4ff');
+    s.setAttribute('opacity', '0.7');
+    s.setAttribute('position', p.join(' '));
+    scene.appendChild(s);
+    dotEntities.push(s);
+  });
+
+  updateBasis([[1,0,0],[0,1,0],[0,0,1]]);
+  scene.appendChild(makeLabel('grey=original  blue=transformed', [0, -3.5, 0], '#555', 0.16));
+});
+
+window.setMode = setMode;
+</script>
+</body>
+</html>

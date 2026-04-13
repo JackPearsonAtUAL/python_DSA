@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>05 · Cross Product — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:1rem 1.4rem; max-width:580px; }
+  .panel h2 { font-size:0.9rem; color:#7fff6e; margin-bottom:0.3rem; }
+  .panel p  { font-size:0.75rem; color:#888; line-height:1.5; }
+  .panel .formula { color:#5ec4ff; margin-top:0.3rem; font-size:0.78rem; }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>05 · Cross Product</h2>
+    <p>Two vectors <strong style="color:#5ec4ff">u</strong> and <strong style="color:#ff9966">v</strong>
+       lie in a plane and define a parallelogram. Their cross product
+       <strong style="color:#cc88ff">u×v</strong> points perpendicularly out of that plane.
+       Its length equals the parallelogram's area.</p>
+    <div class="formula">u=[2,0,0]  v=[1,0,2]  u×v=[0,-4,0] (points down −Y here)  |u×v|=4</div>
+  </div>
+</div>
+<a id="back" href="index.html">← index</a>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const scene = document.querySelector('a-scene');
+  buildScene(scene, { camPos:'5 6 8' });
+
+  const u = [2,0,0];
+  const v = [1,0,2];
+  const w = LA.cross(u,v);   // [0, -4, 0]
+  const area = LA.mag(w);
+
+  // Parallelogram face (two triangles)
+  const verts = [
+    [0,0,0], u, LA.add(u,v), v
+  ];
+  const para = document.createElement('a-entity');
+  // Use a-frame geometry via custom vertices via a plane approximation
+  // We'll draw the edges as lines and shade with a thin box
+  const edges = [[0,1],[1,2],[2,3],[3,0]];
+  edges.forEach(([i,j]) => {
+    const from = verts[i], to = verts[j];
+    const lineEl = document.createElement('a-entity');
+    lineEl.setAttribute('line', `start:${from.join(' ')}; end:${to.join(' ')}; color:#cc88ff; opacity:0.5`);
+    scene.appendChild(lineEl);
+  });
+
+  // Diagonal lines for shading effect
+  [[0,2],[1,3]].forEach(([i,j]) => {
+    scene.appendChild(makeDashedLine(verts[i], verts[j], '#cc88ff', 20, 0.015));
+  });
+
+  // u and v arrows
+  scene.appendChild(makeArrow([0,0,0], u, '#5ec4ff', 1, 0.06, 0.12, 0.25));
+  scene.appendChild(makeArrow([0,0,0], v, '#ff9966', 1, 0.06, 0.12, 0.25));
+  scene.appendChild(makeLabel('u=[2,0,0]', [u[0]*0.5, 0.25, u[2]*0.5], '#5ec4ff'));
+  scene.appendChild(makeLabel('v=[1,0,2]', [v[0]*0.5-0.3, 0.25, v[2]*0.5], '#ff9966'));
+
+  // Cross product arrow (scaled for visibility)
+  const wScaled = LA.scale(0.5, LA.norm(w)); // show direction, not full length
+  const wVis = [0, -2, 0]; // actual cross product direction
+  scene.appendChild(makeArrow([0,0,0], wVis, '#cc88ff', 1, 0.07, 0.14, 0.3));
+  scene.appendChild(makeLabel(`u×v\n|area|=${area}`, [0.3, -2.4, 0.3], '#cc88ff', 0.16));
+
+  // Perpendicularity dashed lines from cross product tip to u and v
+  scene.appendChild(makeDashedLine([0,0,0], [0,-2,0], '#cc88ff', 30, 0.01));
+
+  // Area label on the parallelogram
+  const center = LA.scale(0.5, LA.add(u, v));
+  scene.appendChild(makeLabel(`Area = ${area}`, [center[0], center[1]+0.3, center[2]], '#cc88ff', 0.15));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>10 · Projection — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:1rem 1.4rem; max-width:620px; }
+  .panel h2 { font-size:0.9rem; color:#7fff6e; margin-bottom:0.3rem; }
+  .panel p  { font-size:0.75rem; color:#888; line-height:1.6; }
+  .panel .formula { color:#5ec4ff; font-size:0.78rem; margin-top:0.4rem; }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+  #nums { position:fixed; bottom:1rem; left:1rem; background:rgba(10,10,15,0.88);
+          border:1px solid #1e1e2e; padding:0.8rem 1rem; font-size:0.72rem; color:#666; }
+  #nums span { display:block; margin-bottom:0.2rem; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>10 · Projection</h2>
+    <p>
+      <strong style="color:#5ec4ff">u</strong> is the vector we project.
+      <strong style="color:#ff9966">v</strong> is the direction we project onto.
+      <strong style="color:#7fff6e">proj</strong> is the "shadow" of u onto v — how much of u lies along v.
+      <strong style="color:#cc88ff">residual</strong> is the leftover part, always perpendicular to v.
+    </p>
+    <div class="formula">proj_v(u) = (u·v / v·v) × v</div>
+  </div>
+</div>
+<a id="back" href="index.html">← index</a>
+<div id="nums">
+  <span id="n-u"></span>
+  <span id="n-v"></span>
+  <span id="n-p"></span>
+  <span id="n-r"></span>
+  <span id="n-dot"></span>
+</div>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const scene = document.querySelector('a-scene');
+  buildScene(scene, { camPos:'6 5 9' });
+
+  const u = [3, 3, 1];
+  const v = [4, 0, 1];
+
+  const scale = LA.dot(u,v) / LA.dot(v,v);
+  const p = LA.scale(scale, v);
+  const r = LA.sub(u, p);
+
+  // Axes
+  // u
+  scene.appendChild(makeArrow([0,0,0], u, '#5ec4ff', 1, 0.06, 0.12, 0.25));
+  scene.appendChild(makeLabel('u', [u[0]+0.1, u[1]+0.15, u[2]], '#5ec4ff', 0.2));
+
+  // v (extended for context)
+  const vExt = LA.scale(1.3, LA.norm(v));
+  scene.appendChild(makeArrow([0,0,0], vExt, '#ff9966', 0.5, 0.03, 0.07, 0.15));
+  scene.appendChild(makeDashedLine(LA.scale(-0.8, LA.norm(v)), [0,0,0], '#ff9966', 12, 0.015));
+  scene.appendChild(makeArrow([0,0,0], v, '#ff9966', 1, 0.05, 0.1, 0.2));
+  scene.appendChild(makeLabel('v', [v[0]+0.1, v[1]+0.15, v[2]], '#ff9966', 0.2));
+
+  // Projection (shadow)
+  scene.appendChild(makeArrow([0,0,0], p, '#7fff6e', 1, 0.07, 0.14, 0.28));
+  scene.appendChild(makeLabel('proj', [p[0]*0.5-0.1, p[1]*0.5+0.3, p[2]*0.5], '#7fff6e', 0.16));
+
+  // Residual (from p to u)
+  scene.appendChild(makeArrow(p, u, '#cc88ff', 1, 0.05, 0.1, 0.2));
+  const rMid = LA.add(p, LA.scale(0.5, r));
+  scene.appendChild(makeLabel('residual\n(⊥ to v)', [rMid[0]+0.2, rMid[1]+0.1, rMid[2]], '#cc88ff', 0.15));
+
+  // Right-angle marker at p (small square using 3 line segments)
+  const pn = LA.norm(p);          // direction along v
+  const rn = LA.norm(r);          // direction along residual
+  const sz = 0.2;
+  const m1 = LA.add(p, LA.scale(sz, pn));
+  const m2 = LA.add(p, LA.scale(sz, rn));
+  const m3 = LA.add(m1, LA.scale(sz, rn));
+  [[ p, m1],[m1,m3],[m3, m2],[m2, p]].forEach(([a,b])=>{
+    const le = document.createElement('a-entity');
+    le.setAttribute('line',`start:${a.join(' ')};end:${b.join(' ')};color:#ffffff;opacity:0.6`);
+    scene.appendChild(le);
+  });
+
+  // Dashed drop line from tip of u to p (showing the perpendicular)
+  scene.appendChild(makeDashedLine(u, p, '#cc88ff', 20, 0.015));
+
+  // Dots
+  [[[0,0,0],'#fff'],[u,'#5ec4ff'],[v,'#ff9966'],[p,'#7fff6e']].forEach(([pt,col])=>{
+    const s = document.createElement('a-sphere');
+    s.setAttribute('radius',0.09); s.setAttribute('color',col);
+    s.setAttribute('position',pt.join(' ')); scene.appendChild(s);
+  });
+
+  // Numbers panel
+  const fmt = arr => `[${arr.map(x=>x.toFixed(2)).join(', ')}]`;
+  document.getElementById('n-u').textContent   = `u              = ${fmt(u)}`;
+  document.getElementById('n-v').textContent   = `v (onto)       = ${fmt(v)}`;
+  document.getElementById('n-p').textContent   = `projection     = ${fmt(p)}`;
+  document.getElementById('n-r').textContent   = `residual       = ${fmt(r)}`;
+  document.getElementById('n-dot').textContent = `check u·r ≈ 0  = ${LA.dot(p,r).toFixed(8)}`;
+});
+</script>
+</body>
+</html>

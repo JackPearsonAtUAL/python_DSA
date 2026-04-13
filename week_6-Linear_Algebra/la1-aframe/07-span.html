@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>07 · Span — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:1rem 1.4rem; max-width:620px; }
+  .panel h2 { font-size:0.9rem; color:#7fff6e; margin-bottom:0.3rem; }
+  .panel p  { font-size:0.75rem; color:#888; line-height:1.5; }
+  .cases { display:flex; gap:1rem; margin-top:0.4rem; font-size:0.7rem; }
+  .case  { padding:0.3rem 0.6rem; border-radius:3px; }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>07 · Span of Vectors</h2>
+    <p>Three groups offset in Z, each showing a different span. Points are random linear combinations of the basis vectors.</p>
+    <div class="cases">
+      <span class="case" style="background:#1a1a2a;color:#5ec4ff">1 vector → line</span>
+      <span class="case" style="background:#1a2a1a;color:#7fff6e">2 independent → plane</span>
+      <span class="case" style="background:#2a1a1a;color:#ff5566">2 parallel → still a line</span>
+    </div>
+  </div>
+</div>
+<a id="back" href="index.html">← index</a>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const scene = document.querySelector('a-scene');
+  buildScene(scene, { camPos:'8 6 10', showAxes:false, showGrid:false });
+
+  // Seeded random
+  let seed = 42;
+  function rand() { seed=(seed*9301+49297)%233280; return seed/233280*6-3; }
+
+  function addDot(pos, color, r=0.06) {
+    const s = document.createElement('a-sphere');
+    s.setAttribute('radius', r);
+    s.setAttribute('color', color);
+    s.setAttribute('position', pos.join(' '));
+    scene.appendChild(s);
+  }
+
+  // ── Case 1: 1 vector → a line ──────────────────────────────────────────
+  const z1 = -5;
+  const v1 = [1, 0.6, 0];
+  for (let i=0; i<50; i++) {
+    const t = rand();
+    addDot([t*v1[0], t*v1[1], z1], '#5ec4ff', 0.05);
+  }
+  scene.appendChild(makeArrow([0,0,z1], [v1[0]*1.5,v1[1]*1.5,z1], '#5ec4ff', 1, 0.05, 0.1, 0.2));
+  scene.appendChild(makeLabel('1 vector\n→ a line', [0.5, 2.5, z1], '#5ec4ff', 0.16));
+
+  // ── Case 2: 2 independent → a plane ───────────────────────────────────
+  const z2 = 0;
+  const va = [1,0,0], vb = [0,0,1];
+  for (let i=0; i<80; i++) {
+    const a = rand(), b = rand();
+    addDot([a*va[0]+b*vb[0], 0, z2+a*va[2]+b*vb[2]], '#7fff6e', 0.05);
+  }
+  scene.appendChild(makeArrow([0,0,z2], [2,0,z2], '#7fff6e', 1, 0.05, 0.1, 0.2));
+  scene.appendChild(makeArrow([0,0,z2], [0,0,z2+2], '#ffcc44', 1, 0.05, 0.1, 0.2));
+  // Plane outline
+  const plane = document.createElement('a-plane');
+  plane.setAttribute('width', 6); plane.setAttribute('height', 6);
+  plane.setAttribute('color', '#7fff6e'); plane.setAttribute('opacity', 0.07);
+  plane.setAttribute('rotation', '-90 0 0');
+  plane.setAttribute('position', `0 0 ${z2}`);
+  scene.appendChild(plane);
+  scene.appendChild(makeLabel('2 independent\n→ a plane', [2.5, 1, z2], '#7fff6e', 0.16));
+
+  // ── Case 3: 2 parallel → still a line ─────────────────────────────────
+  const z3 = 5;
+  const vc = [1,0.6,0], vd = [2,1.2,0]; // vd = 2*vc
+  for (let i=0; i<50; i++) {
+    const a = rand(), b = rand();
+    addDot([a*vc[0]+b*vd[0], a*vc[1]+b*vd[1], z3], '#ff5566', 0.05);
+  }
+  scene.appendChild(makeArrow([0,0,z3], [vc[0]*1.5,vc[1]*1.5,z3], '#ff5566', 1, 0.05, 0.1, 0.2));
+  scene.appendChild(makeArrow([0,0,z3], [vd[0],vd[1],z3], '#ffaa66', 0.7, 0.04, 0.08, 0.18));
+  scene.appendChild(makeLabel('2 parallel\n→ still a line', [0.5, 2.5, z3], '#ff5566', 0.16));
+  scene.appendChild(makeLabel('vd = 2·vc', [vd[0]*0.6+0.3, vd[1]*0.6+0.2, z3], '#ffaa66', 0.12));
+});
+</script>
+</body>
+</html>

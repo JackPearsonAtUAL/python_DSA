@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>08 · Data as Vectors — LA1 3D</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="la-utils.js"></script>
+<style>
+  body { margin:0; background:#0a0a0f; font-family:'Space Mono',monospace; }
+  #ui { position:fixed; top:0; left:0; right:0; z-index:10; pointer-events:none; }
+  .panel { background:rgba(10,10,15,0.88); border-bottom:1px solid #1e1e2e; padding:1rem 1.4rem; max-width:580px; }
+  .panel h2 { font-size:0.9rem; color:#7fff6e; margin-bottom:0.3rem; }
+  .panel p  { font-size:0.75rem; color:#888; line-height:1.5; }
+  #back { position:fixed; top:1rem; right:1rem; z-index:20; color:#7fff6e;
+          text-decoration:none; font-size:0.7rem; background:rgba(10,10,15,0.9);
+          border:1px solid #1e1e2e; padding:0.4rem 0.8rem; pointer-events:all; }
+  #legend { position:fixed; bottom:1rem; left:1rem; background:rgba(10,10,15,0.88);
+            border:1px solid #1e1e2e; padding:0.8rem 1rem; font-size:0.72rem; }
+  .leg-row { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem; }
+  .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="panel">
+    <h2>08 · Data as Vectors</h2>
+    <p>Five students represented as points in 3D feature space.
+       Each axis is one measurable attribute. Distance between points = similarity.
+       Arrows show each student's feature vector from the origin.</p>
+  </div>
+</div>
+<a id="back" href="index.html">← index</a>
+<div id="legend"></div>
+
+<a-scene background="color:#0a0a0f" renderer="antialias:true">
+</a-scene>
+
+<script>
+const students = [
+  { name:'Alice',   v:[8,7,6], color:'#5ec4ff'  },
+  { name:'Bob',     v:[3,5,3], color:'#ff5566'  },
+  { name:'Charlie', v:[6,8,5], color:'#7fff6e'  },
+  { name:'Diana',   v:[2,4,7], color:'#ffcc44'  },
+  { name:'Eve',     v:[9,6,4], color:'#cc88ff'  },
+];
+
+// Build legend
+const leg = document.getElementById('legend');
+students.forEach(s => {
+  const row = document.createElement('div');
+  row.className = 'leg-row';
+  row.innerHTML = `<div class="dot" style="background:${s.color}"></div>
+    <span style="color:${s.color}">${s.name}</span>
+    <span style="color:#555">[study=${s.v[0]}, sleep=${s.v[1]}, exercise=${s.v[2]}]</span>`;
+  leg.appendChild(row);
+});
+
+// Dot product similarity
+function dot(a,b) { return a.reduce((s,v,i)=>s+v*b[i],0); }
+const alice = students[0].v;
+students.slice(1).forEach(s => {
+  const d = dot(alice, s.v);
+  const row = document.createElement('div');
+  row.style.cssText = 'color:#555;font-size:0.65rem;margin-top:0.15rem';
+  row.textContent = `Alice·${s.name} = ${d}`;
+  leg.appendChild(row);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const scene = document.querySelector('a-scene');
+  // Custom camera — further back for the larger space
+  buildScene(scene, { camPos:'12 10 14', gridSize:10, showAxes:true });
+
+  // Axis labels for context
+  scene.appendChild(makeLabel('Study hrs →', [5,0.3,0], '#ff5555', 0.18));
+  scene.appendChild(makeLabel('Sleep hrs ↑', [0.3,5,0], '#55ff55', 0.18));
+  scene.appendChild(makeLabel('Exercise →', [0,0.3,5], '#5599ff', 0.18));
+
+  // Scale factor to fit in scene
+  const sc = 0.8;
+
+  students.forEach(({ name, v, color }) => {
+    const sv = v.map(x=>x*sc);
+
+    // Arrow from origin
+    scene.appendChild(makeArrow([0,0,0], sv, color, 0.85, 0.04, 0.09, 0.2));
+
+    // Sphere at data point
+    const s = document.createElement('a-sphere');
+    s.setAttribute('radius', 0.14);
+    s.setAttribute('color', color);
+    s.setAttribute('position', sv.join(' '));
+    scene.appendChild(s);
+
+    // Label
+    scene.appendChild(makeLabel(name, [sv[0]+0.15, sv[1]+0.2, sv[2]], color, 0.18));
+
+    // Ground projection (dashed drop line)
+    scene.appendChild(makeDashedLine(sv, [sv[0],0,sv[2]], color, 16, 0.015));
+    const groundDot = document.createElement('a-sphere');
+    groundDot.setAttribute('radius', 0.06);
+    groundDot.setAttribute('color', color);
+    groundDot.setAttribute('opacity', 0.4);
+    groundDot.setAttribute('position', `${sv[0]} 0 ${sv[2]}`);
+    scene.appendChild(groundDot);
+  });
+});
+</script>
+</body>
+</html>
