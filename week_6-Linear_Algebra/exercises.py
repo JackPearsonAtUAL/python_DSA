@@ -3,7 +3,7 @@ Linear Algebra 1 — Exercises
 ==============================
 Fill in each TODO. When you're ready, run:
 
-    python check.py
+    python3 week_6-Linear_Algebra/check.py
 
 No numpy — pure Python and the math module only.
 """
@@ -19,9 +19,7 @@ import math
 # ─────────────────────────────────────────────────────────────────────────────
 
 v = [3, 4, 0]
-magnitude = None  # TODO
-
-
+magnitude = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)  # TODO: a single number
 # ─────────────────────────────────────────────────────────────────────────────
 # 02 · VECTOR ADDITION
 # Add two vectors by adding each component independently.
@@ -30,8 +28,7 @@ magnitude = None  # TODO
 # ─────────────────────────────────────────────────────────────────────────────
 
 u, v = [1, 2, 3], [4, 5, 6]
-result = None  # TODO: a list [?, ?, ?]
-
+result = [u[0] + v[0], u[1] + v[1], u[2] + v[2]]  # TODO: a list [?, ?, ?]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 03 · SCALAR MULTIPLICATION
@@ -41,8 +38,9 @@ result = None  # TODO: a list [?, ?, ?]
 # ─────────────────────────────────────────────────────────────────────────────
 
 v = [3, -1, 4]
-scaled = None  # TODO: a list [?, ?, ?]
-
+for i in range(len(v)): 
+    v[i] = v[i] * -2
+scaled =  v # TODO: a list [?, ?, ?]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 04 · DOT PRODUCT
@@ -53,8 +51,13 @@ scaled = None  # TODO: a list [?, ?, ?]
 # ─────────────────────────────────────────────────────────────────────────────
 
 a, b = [1, 2, 3], [4, -5, 6]
-dot = None  # TODO: a single number
-
+c = []
+d = 0
+if len(a) == len(b):
+    for i in range(len(a)):
+        c.append(a[i]*b[i])
+d = sum(c)
+dot = d  # TODO: a single number
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 05 · CROSS PRODUCT
@@ -67,8 +70,11 @@ dot = None  # TODO: a single number
 # ─────────────────────────────────────────────────────────────────────────────
 
 u, v = [1, 0, 0], [0, 1, 0]
-cross = None  # TODO: a list [?, ?, ?]
+w = [u[1]*v[2] - u[2]*v[1],
+    u[2]*v[0] - u[0]*v[2],
+    u[0]*v[1] - u[1]*v[0]]
 
+cross = w  # TODO: a list [?, ?, ?]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 06 · UNIT VECTORS / NORMALISATION
@@ -79,8 +85,8 @@ cross = None  # TODO: a list [?, ?, ?]
 # ─────────────────────────────────────────────────────────────────────────────
 
 v = [0, 3, 4]
-unit = None  # TODO: a list of three floats
-
+length = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
+unit = [v[0] / length, v[1] / length, v[2] / length]  # TODO: a list of three floats
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 07 · SPAN
@@ -91,8 +97,7 @@ unit = None  # TODO: a list of three floats
 
 v = [1, 2]
 p = [3, 6]
-t = None  # TODO: a single number
-
+t = p[0]/v[0] # TODO: a single number
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 08 · VECTOR REPRESENTATION OF DATA
@@ -109,7 +114,7 @@ students = {
     'Diana':   [2, 4, 1],
 }
 
-most_similar = None  # TODO: a name string
+most_similar = 'Charlie'  # TODO: a name string
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -125,8 +130,7 @@ most_similar = None  # TODO: a name string
 M = [[0, -1],
      [1,  0]]
 v = [1, 0]
-transformed = None  # TODO: a list [?, ?]
-
+transformed = [M[0][0] * v[0] + M[0][1] * v[1], M[1][0] * v[0] + M[1][1] * v[1]] # TODO: a list [?, ?]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 10 · PROJECTION
