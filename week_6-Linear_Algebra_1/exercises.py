@@ -3,7 +3,7 @@ Linear Algebra 1 — Exercises
 ==============================
 Fill in each TODO. When you're ready, run:
 
-    python3 week_6-Linear_Algebra/check.py
+    python3 week_6-Linear_Algebra_1/check.py
 
 No numpy — pure Python and the math module only.
 """
@@ -142,4 +142,4 @@ transformed = [M[0][0] * v[0] + M[0][1] * v[1], M[1][0] * v[0] + M[1][1] * v[1]]
 
 u = [4, 3]
 v = [1, 0]
-proj = None  # TODO: a list [?, ?]
+proj = [4, 0]  # TODO: a list [?, ?]
