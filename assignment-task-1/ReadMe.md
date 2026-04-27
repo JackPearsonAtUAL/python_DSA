@@ -4,8 +4,6 @@
 
 Implement a Priority Queue according to the stated requirements using the starter project provided.
 
-**Requirements**
-
 **Objectives:** Implement the specified programme in code
 
 ## Programmer Notes
