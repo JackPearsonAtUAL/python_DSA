@@ -4,7 +4,16 @@ import numpy as np
 # Rotate a 2D vector by a certain angle
 def rotate(vector, angle):
 	# Action required!
-    return vector
+
+    # creates the sin and cos of the radin angle
+    c, s = np.cos(angle), np.sin(angle) 
+    
+    # puts the sine and cos into the formulaic array
+    rotationMatrix = np.array([[c, -s],[s, c]]) 
+
+    #return the new angle
+    return np.dot(rotationMatrix, vector) 
+
 
 # Map a value from one range to another
 def map(n, start1, stop1, start2, stop2):

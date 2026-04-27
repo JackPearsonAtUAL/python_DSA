@@ -11,7 +11,6 @@ class Ship:
         self.angle = 0.0
         # Additional properties goes here:
 
-
         # Leave the rest of these properties
         self.surface = surface
         self.radius = 20
@@ -22,11 +21,23 @@ class Ship:
     def update(self, mouse_pos, asteroids, game_status):
         # Action required!
 
-        # Set position of ship based on given parameter
-        self.pos = self.pos
+        distance = np.array([mouse_pos[0] - self.pos[0], mouse_pos[1] - self.pos[1]]) # The distance between the two x and two y coords
+        dxy = math.hypot(distance[0], distance[1]) # The straight line made using the distance variable
 
-        # Determine rotation angle of ship to point at cursor
-        self.angle = self.angle
+        # Allows the speed to be dynamic, based on the distance from the cursor
+        speed = 0.05 * dxy
+
+        # Set position of ship based on given parameters
+        # The if condition stops the ship jittering when reaching the mouse's position
+        direction = np.array([(speed) * math.sin(self.angle), 
+                                (speed) * math.cos(self.angle)])
+        
+        if dxy > 0:           
+            self.pos += direction
+
+
+        # Determines the angle needed to move the ship to the cursor for the next update() loop
+        self.angle = np.arctan2(distance[0], distance[1])
 
         # Leave the rest of the code
         # Check for collision
